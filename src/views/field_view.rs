@@ -1,5 +1,5 @@
 use crate::widgets::*;
-use restq::{ast::Value, data_value::cast_data_value, ColumnDef, DataType, DataValue};
+use restq::{Value, data_value::cast_data_value, ColumnDef, DataType, DataValue};
 use sauron::{
     html::{
         attributes::{class, classes_flag, r#type},

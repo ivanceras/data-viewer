@@ -2,7 +2,7 @@
 pub use app::App;
 pub use error::Error;
 use log::Level;
-pub use restq::{ast::ddl::DataTypeDef, ColumnDef, DataType, DataValue};
+pub use restq::{ColumnDef, DataType, DataValue};
 use sauron::*;
 use views::DataView;
 
@@ -34,7 +34,7 @@ pub fn initialize(initial_state: &str) {
 
 fn create_data_view() -> DataView {
     let csv =
-        "actor{*actor_id:s32,@first_name:text,last_name:text,last_update:utc,is_active:bool}\n\
+        "{*actor_id:s32,@first_name:text,last_name:text,last_update:utc,is_active:bool}\n\
         1,PENELOPE,GUINESS,2006-02-15 09:34:33,true\n\
         2,NICK,WAHLBERG,2006-02-15 09:34:33,false\n\
         3,ED,CHASE,2006-02-15 09:34:33,true\n\

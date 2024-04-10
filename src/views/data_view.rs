@@ -3,10 +3,9 @@ use crate::{
     widgets::selector_box,
     ColumnDef, DataValue, Error,
 };
-use restq::{bytes_to_chars, table_def, CsvRows, TableName};
 use sauron::{
     html::{
-        attributes::{class, key},
+        attributes::class,
         events::*,
         units::*,
         *,
@@ -15,9 +14,9 @@ use sauron::{
 };
 use std::{
     cell::RefCell,
-    io::{BufRead, BufReader, Cursor},
     rc::Rc,
 };
+use restq::DataPane;
 
 #[derive(Debug, PartialEq)]
 pub enum Msg {
@@ -36,7 +35,6 @@ pub enum Grip {
 }
 
 pub struct DataView {
-    pub table_name: TableName,
     pub data_columns: Vec<ColumnDef>,
     pub column_views: Vec<ColumnView>,
     pub page_views: Vec<PageView>,
@@ -123,7 +121,6 @@ impl Component for DataView {
                 },
                 // to ensure no reusing of table view when replaced with
                 // another table
-                key(format!("data_view_{}", self.table_name.name)),
             ],
             [
                 // TOP-LEFT: Content 1
@@ -194,31 +191,18 @@ impl Component for DataView {
 impl DataView {
     /// Note: if the data is deformed, only the correctly formed ones will be parsed and shown
     pub fn from_csv_data(csv: Vec<u8>) -> Result<Self, Error> {
-        let mut bufread = BufReader::new(Cursor::new(csv));
-        let mut first_line = vec![];
-        let _header_len = bufread
-            .read_until(b'\n', &mut first_line)
-            .map_err(Error::HeaderIoError)?;
+        let data_pane = DataPane::from_csv(csv)?;
 
-        let header_input = bytes_to_chars(&first_line);
-        let table_def = table_def()
-            .parse(&header_input)
-            .map_err(Error::HeaderParseError)?;
-
-        let column_defs = table_def.columns.clone();
-        trace!("bufread len: {}", bufread.buffer().len());
-        let rows_iter = CsvRows::new(bufread);
-        let data: Vec<Vec<restq::DataValue>> = rows_iter.into_data_values(&column_defs);
+        let column_defs = data_pane.columns.clone();
+        let data: Vec<Vec<restq::DataValue>> = data_pane.row_values;
         trace!("rows: {}", data.len());
         let page_view = PageView::new(&column_defs, &data);
         let data_view = DataView {
-            table_name: table_def.table.clone(),
-            data_columns: table_def.columns.clone(),
-            column_views: table_def
-                .columns
+            column_views: column_defs 
                 .iter()
                 .map(|column| ColumnView::new(column.clone()))
                 .collect(),
+            data_columns: column_defs,
             page_views: vec![page_view],
             frozen_rows: vec![],
             frozen_columns: vec![],
