@@ -56,6 +56,41 @@ pub struct DataView {
     start_x: i32,
 }
 
+impl DataView{
+    /// Note: if the data is deformed, only the correctly formed ones will be parsed and shown
+    pub fn from_csv_data(csv: Vec<u8>) -> Result<Self, Error> {
+        let data_pane = DataPane::from_csv(csv)?;
+        Self::from_data_pane(data_pane)
+    }
+
+    pub fn from_data_pane(data_pane: DataPane) -> Result<Self, Error> {
+        let column_defs = data_pane.columns.clone();
+        let data: Vec<Vec<restq::DataValue>> = data_pane.row_values;
+        trace!("rows: {}", data.len());
+        let page_view = PageView::new(&column_defs, &data);
+        let data_view = DataView {
+            column_views: column_defs 
+                .iter()
+                .map(|column| ColumnView::new(column.clone()))
+                .collect(),
+            data_columns: column_defs,
+            page_views: vec![page_view],
+            frozen_rows: vec![],
+            frozen_columns: vec![],
+            scroll_top: 0,
+            scroll_left: 0,
+            allocated_width: 0,
+            allocated_height: 0,
+            total_rows: 0,
+            current_page: 0,
+            visible_page: 0,
+            active_resize: None,
+            start_x: 0,
+        };
+        Ok(data_view)
+    }
+}
+
 impl Component for DataView {
     type MSG = Msg;
     type XMSG = ();
@@ -189,35 +224,6 @@ impl Component for DataView {
 }
 
 impl DataView {
-    /// Note: if the data is deformed, only the correctly formed ones will be parsed and shown
-    pub fn from_csv_data(csv: Vec<u8>) -> Result<Self, Error> {
-        let data_pane = DataPane::from_csv(csv)?;
-
-        let column_defs = data_pane.columns.clone();
-        let data: Vec<Vec<restq::DataValue>> = data_pane.row_values;
-        trace!("rows: {}", data.len());
-        let page_view = PageView::new(&column_defs, &data);
-        let data_view = DataView {
-            column_views: column_defs 
-                .iter()
-                .map(|column| ColumnView::new(column.clone()))
-                .collect(),
-            data_columns: column_defs,
-            page_views: vec![page_view],
-            frozen_rows: vec![],
-            frozen_columns: vec![],
-            scroll_top: 0,
-            scroll_left: 0,
-            allocated_width: 0,
-            allocated_height: 0,
-            total_rows: 0,
-            current_page: 0,
-            visible_page: 0,
-            active_resize: None,
-            start_x: 0,
-        };
-        Ok(data_view)
-    }
 
     pub fn set_pages(
         &mut self,

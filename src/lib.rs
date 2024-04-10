@@ -12,7 +12,7 @@ extern crate log;
 pub(crate) mod app;
 pub(crate) mod assets;
 mod error;
-mod views;
+pub mod views;
 pub(crate) mod widgets;
 
 #[wasm_bindgen]
