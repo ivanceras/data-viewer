@@ -37,7 +37,6 @@ impl Component for FieldView {
     type XMSG = ();
 
     fn update(&mut self, msg: Msg) -> Effects<Msg, ()> {
-        trace!("field updated: {:?}", msg);
         match msg {
             Msg::TextChange(value) => {
                 debug!("text changed..{}", value);
@@ -78,7 +77,6 @@ impl Component for FieldView {
 
 impl FieldView {
     pub fn new(value: &DataValue, column: &ColumnDef) -> Self {
-        info!("field value: {:?}", value);
         FieldView {
             new_value: value.clone(),
             value: value.clone(),
