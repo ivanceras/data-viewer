@@ -281,6 +281,42 @@ impl FieldView {
                     on_change(|input| Msg::TextChange(input.value())),
                 ],
             ),
+            DataValue::I8(v) => numberbox(
+                v,
+                [
+                    classes,
+                    size,
+                    padding,
+                    on_change(|input| Msg::TextChange(input.value())),
+                ],
+            ),
+            DataValue::I16(v) => numberbox(
+                v,
+                [
+                    classes,
+                    size,
+                    padding,
+                    on_change(|input| Msg::TextChange(input.value())),
+                ],
+            ),
+            DataValue::I32(v) => numberbox(
+                v,
+                [
+                    classes,
+                    size,
+                    padding,
+                    on_change(|input| Msg::TextChange(input.value())),
+                ],
+            ),
+            DataValue::I64(v) => numberbox(
+                v,
+                [
+                    classes,
+                    size,
+                    padding,
+                    on_change(|input| Msg::TextChange(input.value())),
+                ],
+            ),
             DataValue::F32(v) => numberbox(
                 v,
                 [
