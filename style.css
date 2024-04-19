@@ -139,10 +139,8 @@ input.search_widget__column_filter[type="text"]{
 .data_view__normal_column_names__frozen_rows{
     overflow-x: hidden;
 }
-/* add an animation for the transition of margin to smoothen out the
- * transition */
+
 .normal_column_names__frozen_rows{
-    transition: margin 10ms ease;
 }
 
 .data_view__frozen_columns {
